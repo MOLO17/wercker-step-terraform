@@ -1,0 +1,22 @@
+box: releasequeue/ci-buildtools:0.3.5
+
+build:
+    steps:
+        - script:
+            name: Fatten
+            code: |
+              git submodule update --init --recursive
+              ./lib/shellfire/fatten/fatten -f -v --repository-path ./ --output-path ./ -- run_terraform
+              mv ./usr/bin/run_terraform ./run.sh
+        - script:
+            name: Copy to output dir
+            code: |
+              cp ./run.sh $WERCKER_OUTPUT_DIR/run.sh
+              ls -lah $WERCKER_OUTPUT_DIR
+
+deploy:
+  steps:
+    - script:
+        name: debug
+        code: |-
+          ls -lah .
