@@ -11,8 +11,8 @@ build:
         - script:
             name: Copy to output dir
             code: |
-              cp ./run.sh $WERCKER_OUTPUT_DIR/run.sh
-              ls -lah $WERCKER_OUTPUT_DIR
+              cp ./run.sh $WERCKER_ROOT/run.sh
+              ls -lah $WERCKER_ROOT
 
 deploy:
   steps:
