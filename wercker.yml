@@ -6,8 +6,8 @@ build:
             name: Fatten
             code: |
               git submodule update --init --recursive
-              ./lib/shellfire/fatten/fatten -f -v --repository-path ./ --output-path ./ -- run_terraform
-              mv ./usr/bin/run_terraform ./run_terraform
+              ./lib/shellfire/fatten/fatten -f -v --repository-path ./ --output-path ./ -- run_terraform_src
+              mv ./usr/bin/run_terraform_src ./run_terraform
 
 deploy:
   steps:

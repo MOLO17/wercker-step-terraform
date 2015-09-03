@@ -1,10 +1,10 @@
 #!/bin/bash
 
-core_dependency_requires '*' unzip
 
 _program()
 {
     core_usesIn curl
+    core_dependency_requires '*' unzip
 
     run_terraform()
     {
