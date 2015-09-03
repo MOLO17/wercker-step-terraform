@@ -8,11 +8,6 @@ build:
               git submodule update --init --recursive
               ./lib/shellfire/fatten/fatten -f -v --repository-path ./ --output-path ./ -- run_terraform
               mv ./usr/bin/run_terraform ./run.sh
-        - script:
-            name: Copy to output dir
-            code: |
-              cp ./run.sh $WERCKER_ROOT/run.sh
-              ls -lah $WERCKER_ROOT
 
 deploy:
   steps:
