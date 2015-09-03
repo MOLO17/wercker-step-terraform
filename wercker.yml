@@ -1,4 +1,4 @@
-box: releasequeue/ci-buildtools:0.3.5
+box: wercker/default
 
 build:
     steps:
