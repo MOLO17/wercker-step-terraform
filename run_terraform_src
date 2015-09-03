@@ -1,11 +1,9 @@
 #!/bin/bash
 
-
 _program()
 {
     core_usesIn curl
-    core_dependency_requires '*' unzip
-
+    core_dependency_requires '*' 7za
     run_terraform()
     {
         local curl_httpStatusCode
@@ -20,7 +18,9 @@ _program()
 
         core_temporaryFiles_newFolderToRemoveOnExit
         terraformPath="$TMP_FOLDER"
-        unzip "$responseFile" -d $terraformPath
+        cd $terraformPath
+        7za e "$responseFile"
+        cd - 
         export PATH="$terraformPath:$PATH"
 
         AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
