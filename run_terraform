@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 _program()
 {
@@ -14,7 +14,7 @@ _program()
 
         core_temporaryFiles_newFileToRemoveOnExit
         responseFile=$TMP_FILE
-        curl_http none '' GET "https://dl.bintray.com/mitchellh/terraform/terraform_0.6.1_linux_386.zip"  "$responseFile"
+        curl_http none '' GET "http://dl.bintray.com/mitchellh/terraform/terraform_0.6.1_linux_386.zip"  "$responseFile"
 
         core_temporaryFiles_newFolderToRemoveOnExit
         terraformPath="$TMP_FOLDER"
