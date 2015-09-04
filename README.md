@@ -5,7 +5,7 @@ Example usage:
 ```
       - releasequeue/run-terraform@0.0.4:
           action: "plan"
-          execution_plan_file: "output_file"
+          out_file: "output_file"
           access_key: "my_access_key"
           secret_key: "my_secret_key"
           state_stor_bucket: "test-terraform-state-bucket"
@@ -19,7 +19,8 @@ Example usage:
 Parameters:
 
 * action parameter can be either "plan" or "apply"
-* execution_plan_file (optional) can be used to specify where to save or load the execution plan from.
+* out_file (optional) can be used to specify where to save the execution plan(when action is plan).
+* in_file (optional) can be used to specify a saved execution plan(when action is apply)
 * access_key - AWS access key
 * secret_key - AWS secret key
 * state_stor_bucket - s3 bucket where to store the terraform state (must exist)

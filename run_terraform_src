@@ -30,7 +30,7 @@ _program()
             plan)
 
             saved_plan_out=""
-            core_variable_isUnsetOrEmpty "run_terraform_execution_plan_file" || saved_plan_out="-out=$run_terraform_execution_plan_file"
+            core_variable_isUnsetOrEmpty "run_terraform_out_file" || saved_plan_out="-out=$run_terraform_out_file"
 
             AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
             TF_VAR_access_key="$run_terraform_access_key" TF_VAR_secret_key="$run_terraform_secret_key" \
@@ -41,10 +41,7 @@ _program()
             apply)
 
             plan=""
-            core_variable_isUnsetOrEmpty "run_terraform_execution_plan_file" || plan=" $run_terraform_execution_plan_file"
-
-            echo $plan
-            echo $run_terraform_execution_plan_file
+            core_variable_isUnsetOrEmpty "run_terraform_in_file" || plan=" $run_terraform_in_file"
 
             AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
             TF_VAR_access_key="$run_terraform_access_key" TF_VAR_secret_key="$run_terraform_secret_key" \
@@ -102,11 +99,15 @@ _program_commandLine_optionExists()
 {
   case "$optionName" in
 
-    execution_plan_file)
+    action)
         echo 'yes-argumented'
     ;;
 
-    action)
+    out_file)
+        echo 'yes-argumented'
+    ;;
+
+    in_file)
         echo 'yes-argumented'
     ;;
 
@@ -153,12 +154,16 @@ _program_commandLine_optionExists()
 _program_commandLine_processOptionWithArgument()
 {
     case "$optionName" in
-        execution_plan_file)
-            run_terraform_execution_plan_file="$optionValue"
-        ;;
-
         action)
             run_terraform_action="$optionValue"
+        ;;
+
+        out_file)
+            run_terraform_out_file="$optionValue"
+        ;;
+
+        in_file)
+            run_terraform_in_file="$optionValue"
         ;;
 
         access_key)
@@ -219,7 +224,14 @@ _program_commandLine_validate()
     core_variable_isUnsetOrEmpty "run_terraform_api_ssl_certificate_id" && core_exitError $core_commandLine_exitCode_USAGE "api_ssl_certificate_id IS mandatory"
 
     case "$run_terraform_action" in
-        plan|apply) true ;;
+        plan)
+            core_variable_isUnsetOrEmpty "run_terraform_in_file" || core_exitError $core_commandLine_exitCode_USAGE "in_file only for apply"
+            true
+        ;;
+        apply)
+            core_variable_isUnsetOrEmpty "run_terraform_out_file" || core_exitError $core_commandLine_exitCode_USAGE "out_file only for plan"
+            true
+        ;;
         *) core_exitError $core_commandLine_exitCode_USAGE "Action can only be plan or apply, got $run_terraform_action" ;;
     esac
 
