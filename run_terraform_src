@@ -20,25 +20,41 @@ _program()
         terraformPath="$TMP_FOLDER"
         cd $terraformPath
         7za e "$responseFile"
-        cd - 
+        cd -
         export PATH="$terraformPath:$PATH"
 
         AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
         terraform remote config -backend=S3 -backend-config="bucket=$run_terraform_state_stor_bucket" -backend-config="key=$run_terraform_state_stor_key" -backend-config="region=$run_terraform_state_stor_bucket_region"
 
-        AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
-        TF_VAR_access_key="$run_terraform_access_key" TF_VAR_secret_key="$run_terraform_secret_key" \
-        TF_VAR_db_user="$run_terraform_db_user" TF_VAR_db_password="$run_terraform_db_user" \
-        TF_VAR_api_ssl_certificate_id="$run_terraform_api_ssl_certificate_id" terraform plan
+        case "$run_terraform_action" in
+            plan)
 
+            saved_plan_out=""
+            core_variable_isUnsetOrEmpty "run_terraform_execution_plan_file" || saved_plan_out="-out=$run_terraform_execution_plan_file"
 
-        AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
-        TF_VAR_access_key="$run_terraform_access_key" TF_VAR_secret_key="$run_terraform_secret_key" \
-        TF_VAR_db_user="$run_terraform_db_user" TF_VAR_db_password="$run_terraform_db_password" \
-        TF_VAR_api_ssl_certificate_id="$run_terraform_api_ssl_certificate_id" terraform apply
+            AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
+            TF_VAR_access_key="$run_terraform_access_key" TF_VAR_secret_key="$run_terraform_secret_key" \
+            TF_VAR_db_user="$run_terraform_db_user" TF_VAR_db_password="$run_terraform_db_user" \
+            TF_VAR_api_ssl_certificate_id="$run_terraform_api_ssl_certificate_id" terraform plan $saved_plan_out
 
+        ;;
+            apply)
 
-        AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" terraform remote push
+            plan=""
+            core_variable_isUnsetOrEmpty "run_terraform_execution_plan_file" || plan=" $run_terraform_execution_plan_file"
+
+            echo $plan
+            echo $run_terraform_execution_plan_file
+
+            AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" \
+            TF_VAR_access_key="$run_terraform_access_key" TF_VAR_secret_key="$run_terraform_secret_key" \
+            TF_VAR_db_user="$run_terraform_db_user" TF_VAR_db_password="$run_terraform_db_password" \
+            TF_VAR_api_ssl_certificate_id="$run_terraform_api_ssl_certificate_id" terraform apply $plan
+
+            AWS_ACCESS_KEY_ID="$run_terraform_access_key" AWS_SECRET_ACCESS_KEY="$run_terraform_secret_key" terraform remote push
+        ;;
+        esac
+
 
     }
 
@@ -86,6 +102,14 @@ _program_commandLine_optionExists()
 {
   case "$optionName" in
 
+    execution_plan_file)
+        echo 'yes-argumented'
+    ;;
+
+    action)
+        echo 'yes-argumented'
+    ;;
+
     access_key)
         echo 'yes-argumented'
     ;;
@@ -129,6 +153,13 @@ _program_commandLine_optionExists()
 _program_commandLine_processOptionWithArgument()
 {
     case "$optionName" in
+        execution_plan_file)
+            run_terraform_execution_plan_file="$optionValue"
+        ;;
+
+        action)
+            run_terraform_action="$optionValue"
+        ;;
 
         access_key)
             run_terraform_access_key="$optionValue"
@@ -177,6 +208,7 @@ _program_commandLine_handleNonOptions()
 
 _program_commandLine_validate()
 {
+    core_variable_isUnsetOrEmpty "run_terraform_action" && core_exitError $core_commandLine_exitCode_USAGE "Action option is mandatory"
     core_variable_isUnsetOrEmpty "run_terraform_access_key" && core_exitError $core_commandLine_exitCode_USAGE "Access key option is mandatory"
     core_variable_isUnsetOrEmpty "run_terraform_secret_key" && core_exitError $core_commandLine_exitCode_USAGE "Secret key option is mandatory"
     core_variable_isUnsetOrEmpty "run_terraform_state_stor_bucket" && core_exitError $core_commandLine_exitCode_USAGE "Bucket for terraform state option is mandatory"
@@ -185,6 +217,12 @@ _program_commandLine_validate()
     core_variable_isUnsetOrEmpty "run_terraform_db_user" && core_exitError $core_commandLine_exitCode_USAGE "db_user option is mandatory"
     core_variable_isUnsetOrEmpty "run_terraform_db_password" && core_exitError $core_commandLine_exitCode_USAGE "db_password is mandatory"
     core_variable_isUnsetOrEmpty "run_terraform_api_ssl_certificate_id" && core_exitError $core_commandLine_exitCode_USAGE "api_ssl_certificate_id IS mandatory"
+
+    case "$run_terraform_action" in
+        plan|apply) true ;;
+        *) core_exitError $core_commandLine_exitCode_USAGE "Action can only be plan or apply, got $run_terraform_action" ;;
+    esac
+
     true
 }
 
