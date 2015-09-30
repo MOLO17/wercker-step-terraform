@@ -11,27 +11,21 @@ properties:
   in_file:
     type: string
     required: false
-  access_key:
-    type: string
-    required: true
-  secret_key:
-    type: string
-    required: true
   state_stor_bucket:
     type: string
-    required: true
+    required: false
   state_stor_bucket_region:
     type: string
-    required: true
+    required: false
   state_stor_key:
     type: string
-    required: true
+    required: false
   db_user:
     type: string
-    required: true
+    required: false
   db_password:
     type: string
-    required: true
+    required: false
   api_ssl_certificate_id:
     type: string
-    required: true
+    required: false
