@@ -1,5 +1,5 @@
 name: run-terraform
-version: 0.0.10
+version: 0.0.11
 description: Wercker step to pull terraform state from s3 bucket and run terraform apply on the local tf files.
 properties:
   action:
