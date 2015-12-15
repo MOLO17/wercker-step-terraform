@@ -1,17 +1,20 @@
 # wercker-step-terraform
 A Wercker step that will run terraform on local \*.tf files and will save remote state in a s3 bucket.
-
+If you want to specify any variables to the terraform scripts, then for each variable name export an
+environment variable with "TF_VAR_" prefixed to its name.
 Example usage:
 ```
+    - script:
+        name: Set Terraform variables
+        code: |
+          export TF_VAR_my_var1=foo
+          export TF_VAR_my_var2=bar
       - releasequeue/run-terraform@0.0.13:
           action: "plan"
           out_file: "output_file"
           state_stor_bucket: "test-terraform-state-bucket"
           state_stor_bucket_region: "us-east-1"
           state_stor_key: "terraform_state"
-          db_user: "pg_user123"
-          db_password: "pg_pass123"
-          api_ssl_certificate_id: "cert_id"
 
 ```
 Parameters:

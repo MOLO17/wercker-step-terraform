@@ -14,14 +14,16 @@ _program()
 
         core_temporaryFiles_newFileToRemoveOnExit
         responseFile=$TMP_FILE
-        curl_http none '' GET "http://dl.bintray.com/mitchellh/terraform/terraform_0.6.1_linux_386.zip"  "$responseFile"
+        which terraform || {
+            curl_http none '' GET "https://releases.hashicorp.com/terraform/0.6.8/terraform_0.6.8_linux_386.zip"  "$responseFile"
 
-        core_temporaryFiles_newFolderToRemoveOnExit
-        terraformPath="$TMP_FOLDER"
-        cd $terraformPath
-        7za e "$responseFile"
-        cd -
-        export PATH="$terraformPath:$PATH"
+            core_temporaryFiles_newFolderToRemoveOnExit
+            terraformPath="$TMP_FOLDER"
+            cd $terraformPath
+            7za e "$responseFile"
+            cd -
+            export PATH="$terraformPath:$PATH";
+        }
 
         if ! core_variable_isUnsetOrEmpty "run_terraform_state_stor_bucket" && ! core_variable_isUnsetOrEmpty "run_terraform_state_stor_key" && ! core_variable_isUnsetOrEmpty run_terraform_state_stor_bucket_region ;
         then
@@ -37,8 +39,7 @@ _program()
             saved_plan_out=""
             core_variable_isUnsetOrEmpty "run_terraform_out_file" || saved_plan_out="-out=$run_terraform_out_file"
 
-            TF_VAR_db_user="$run_terraform_db_user" TF_VAR_db_password="$run_terraform_db_user" \
-            TF_VAR_api_ssl_certificate_id="$run_terraform_api_ssl_certificate_id" terraform plan $saved_plan_out
+            terraform plan $saved_plan_out
 
         ;;
             apply)
@@ -46,8 +47,7 @@ _program()
             plan=""
             core_variable_isUnsetOrEmpty "run_terraform_in_file" || plan=" $run_terraform_in_file"
 
-            TF_VAR_db_user="$run_terraform_db_user" TF_VAR_db_password="$run_terraform_db_password" \
-            TF_VAR_api_ssl_certificate_id="$run_terraform_api_ssl_certificate_id" terraform apply $plan
+            terraform apply $plan
 
             if ! core_variable_isUnsetOrEmpty "run_terraform_state_stor_bucket" && ! core_variable_isUnsetOrEmpty "run_terraform_state_stor_key" && ! core_variable_isUnsetOrEmpty run_terraform_state_stor_bucket_region ;
             then
@@ -85,9 +85,6 @@ _program_commandLine_helpMessage()
     --secret_key SECRET_KEY
     --state_bucket STATE_BUCKET
     --state_key STATE_KEY
-    --db_user DB_USER
-    --db_password DB_PASSWORD
-    --api_ssl_certificate_id SSL_CERTIFICATE_ID
     "
     _program_commandLine_helpMessage_optionsSpacing='     '
     _program_commandLine_helpMessage_configurationKeys="
@@ -135,18 +132,6 @@ _program_commandLine_optionExists()
         echo 'yes-argumented'
     ;;
 
-    db_user)
-        echo 'yes-argumented'
-    ;;
-
-    db_password)
-        echo 'yes-argumented'
-    ;;
-
-    api_ssl_certificate_id)
-        echo 'yes-argumented'
-    ;;
-
     *)
         echo 'no'
     ;;
@@ -188,17 +173,6 @@ _program_commandLine_processOptionWithArgument()
 
         state_stor_key)
             run_terraform_state_stor_key="$optionValue"
-        ;;
-
-        db_user)
-            run_terraform_db_user="$optionValue"        ;;
-
-        db_password)
-            run_terraform_db_password="$optionValue"
-        ;;
-
-        api_ssl_certificate_id)
-            run_terraform_api_ssl_certificate_id="$optionValue"
         ;;
 
         *)
