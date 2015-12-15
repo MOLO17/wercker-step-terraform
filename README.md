@@ -9,7 +9,7 @@ Example usage:
         code: |
           export TF_VAR_my_var1=foo
           export TF_VAR_my_var2=bar
-      - releasequeue/run-terraform@0.0.13:
+      - releasequeue/run-terraform@0.0.14:
           action: "plan"
           out_file: "output_file"
           state_stor_bucket: "test-terraform-state-bucket"
