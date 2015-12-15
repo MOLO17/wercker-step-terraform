@@ -3,7 +3,7 @@ A Wercker step that will run terraform on local \*.tf files and will save remote
 
 Example usage:
 ```
-      - releasequeue/run-terraform@0.0.4:
+      - releasequeue/run-terraform@0.0.13:
           action: "plan"
           out_file: "output_file"
           state_stor_bucket: "test-terraform-state-bucket"

@@ -28,6 +28,9 @@ _program()
             terraform remote config -backend=S3 -backend-config="bucket=$run_terraform_state_stor_bucket" -backend-config="key=$run_terraform_state_stor_key" -backend-config="region=$run_terraform_state_stor_bucket_region"
         fi
 
+        #retrieve any needed modules
+        terraform get
+
         case "$run_terraform_action" in
             plan)
 
