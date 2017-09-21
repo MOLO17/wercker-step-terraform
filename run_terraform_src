@@ -15,7 +15,7 @@ _program()
         core_temporaryFiles_newFileToRemoveOnExit
         responseFile=$TMP_FILE
         which terraform || {
-            curl_http none '' GET "https://releases.hashicorp.com/terraform/0.7.13/terraform_0.7.13_linux_386.zip"  "$responseFile"
+            curl_http none '' GET "https://releases.hashicorp.com/terraform/0.10.6/terraform_0.10.6_linux_386.zip"  "$responseFile"
 
             core_temporaryFiles_newFolderToRemoveOnExit
             terraformPath="$TMP_FOLDER"
